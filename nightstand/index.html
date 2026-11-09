@@ -17,7 +17,8 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:var(--red);-webkit-font-smoothing:antialiased;user-select:none}
 .screen{position:relative;width:100%;height:100%;height:100dvh;display:grid;place-items:center;padding:env(safe-area-inset-top) 5vw env(safe-area-inset-bottom);background:#000}
-.content{width:min(100%,1000px);display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,24px);transform:translateY(-1vh)}
+.content{width:min(100%,1100px);display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,24px);transform:translateY(-1vh)}
+.info-column{display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,22px);width:100%}
 .date{font-size:clamp(11px,1.6vw,14px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;text-align:center}
 .readings{display:flex;align-items:center;justify-content:center;gap:clamp(18px,5vw,52px);min-height:38px;text-align:center}
 .reading{display:flex;flex-direction:column;gap:3px;min-width:75px}
@@ -56,13 +57,14 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 .notice{font-size:10px;line-height:1.5;opacity:.72;margin:12px 0 0;overflow-wrap:anywhere}
 .dim-layer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
 @media (orientation:portrait){.content{gap:clamp(12px,2.4vh,22px)}.clock{width:min(70vw,52vh,520px);height:auto}}
-@media (orientation:landscape){.content{flex-direction:row;justify-content:center;gap:clamp(24px,5vw,64px)}.date{position:absolute;top:5vh;left:50%;transform:translateX(-50%)}.content{padding-top:5vh}.clock{width:min(64vh,44vw,540px);height:auto}.readings{flex-direction:column;gap:16px}}
-@media (max-height:430px){.clock{width:min(76vh,40vw,340px);height:auto}.date{top:2vh}.content{padding-top:3vh}}
+@media (orientation:landscape){.content{flex-direction:row;justify-content:center;gap:clamp(28px,5vw,68px);padding-top:0}.info-column{width:clamp(190px,23vw,260px);flex:0 0 clamp(190px,23vw,260px);gap:clamp(16px,3vh,26px)}.date{position:static;transform:none;line-height:1.5;max-width:100%}.readings{flex-direction:column;gap:18px}.clock{width:min(64vh,44vw,540px);height:auto}}
+@media (max-height:430px){.clock{width:min(76vh,40vw,340px);height:auto}.content{padding-top:0}.info-column{gap:8px}}
 </style>
 </head>
 <body>
 <main class="screen">
 <section class="content" aria-label="Nightstand clock">
+<div class="info-column">
 <div class="date" id="date"></div>
 <div class="readings" id="indoorReadings" hidden aria-live="polite">
 <div class="reading"><span class="value" id="nurseryTemp">—</span><span class="label">Nursery</span><span class="detail" id="nurseryHumidity">—</span></div>
@@ -70,6 +72,7 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 </div>
 <div class="readings" id="weatherReading" hidden>
 <div class="reading"><span class="value" id="outdoorTemp">—</span><span class="label" id="weatherLabel">Outside</span><span class="detail" id="weatherDetail">—</span></div>
+</div>
 </div>
 <div class="clock" id="clock" role="img" aria-label="Analog clock">
 <div id="ticks"></div>
