@@ -91,10 +91,7 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 <label class="setting"><span>Keep display awake<small>Requires browser support</small></span><input id="keepAwake" type="checkbox"></label>
 <label class="setting"><span>Screen dimmer</span><input id="brightness" type="range" min="0" max="85" value="0"></label>
 <h3>Homebridge · local network only</h3>
-<div class="field"><label for="hbUser">Username</label><input id="hbUser" autocomplete="username" value="nightstand"></div>
-<div class="field"><label for="hbPassword">Password</label><input id="hbPassword" type="password" autocomplete="current-password" placeholder="Enter Homebridge password"></div>
-<div class="panel-actions"><button class="action" id="saveHomebridge">Save & connect</button><button class="action" id="forgetHomebridge">Forget</button></div>
-<p class="notice" id="homebridgeStatus">Homebridge is checked only at 192.168.6.125 on your home Wi-Fi. Credentials are stored in this browser on this iPad, not in the website repository. Indoor readings disappear when the local endpoint cannot be reached.</p>
+<p class="notice" id="homebridgeStatus">Checking the local sensor proxy…</p>
 <h3>Outdoor weather</h3>
 <p class="notice" id="weatherStatus">Uses this iPad's location and Open-Meteo. Location access is requested by Safari.</p>
 <p class="notice" id="wakeNotice">The clock uses your iPad's local time. Keep it connected to power for overnight use.</p>
@@ -103,10 +100,10 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 <div class="dim-layer" id="dimLayer"></div>
 <script>
 const $=id=>document.getElementById(id);
-const HB_BASE='http://192.168.6.125:8581/api';
-const POLL_MS=180000, TOKEN_REFRESH_MS=7*60*60*1000+45*60*1000;
+const SENSOR_URL='https://192.168.6.125:8591/sensors';
+const POLL_MS=180000;
 const defaults={showSeconds:true,keepAwake:false,brightness:0};
-let settings={...defaults},wakeLock=null,hbToken=null,hbTokenAt=0,hbTimer=null,hbBusy=false,weatherTimer=null;
+let settings={...defaults},wakeLock=null,hbTimer=null,hbBusy=false,weatherTimer=null;
 try{settings={...defaults,...JSON.parse(localStorage.getItem('nightstand-settings')||'{}')}}catch{}
 const save=()=>localStorage.setItem('nightstand-settings',JSON.stringify(settings));
 const cToF=c=>Math.round((Number(c)*9/5+32)*10)/10;
@@ -131,30 +128,41 @@ function showIndoor(items){
  $('livingDetail').textContent='Set '+cToF(target).toFixed(1)+'° · '+(modes[mode]||'Mode?')+' · '+(states[state]||'');
  $('indoorReadings').hidden=false;setHBStatus('Homebridge · local');
 }
-async function loginHomebridge(){
- const username=$('hbUser').value.trim(),password=$('hbPassword').value;
- if(!username||!password)throw new Error('Enter the Homebridge username and password in Settings.');
- const response=await fetch(HB_BASE+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password}),cache:'no-store'});
- if(!response.ok)throw new Error(response.status===401?'Homebridge rejected the username or password.':'Homebridge login failed (HTTP '+response.status+').');
- const data=await response.json();if(!data.access_token)throw new Error('Homebridge login response did not contain an access token.');
- hbToken=data.access_token;hbTokenAt=Date.now();
-}
-async function fetchAccessories(){
- if(!hbToken||Date.now()-hbTokenAt>TOKEN_REFRESH_MS)await loginHomebridge();
- let response=await fetch(HB_BASE+'/accessories',{headers:{Authorization:'Bearer '+hbToken},cache:'no-store'});
- if(response.status===401){hbToken=null;await loginHomebridge();response=await fetch(HB_BASE+'/accessories',{headers:{Authorization:'Bearer '+hbToken},cache:'no-store'})}
- if(!response.ok)throw new Error('Homebridge accessories request failed (HTTP '+response.status+').');
- const data=await response.json();if(!Array.isArray(data))throw new Error('Unexpected Homebridge accessories response.');
- showIndoor(data.filter(x=>x.type!=='ProtocolInformation'));
+function pick(obj,...keys){for(const key of keys){const value=key.split('.').reduce((v,k)=>v==null?undefined:v[k],obj);if(value!==undefined&&value!==null&&value!=='')return value}return undefined}
+function asNumber(value){const n=Number(value);return Number.isFinite(n)?n:undefined}
+function showIndoorPayload(payload){
+ let items=Array.isArray(payload)?payload:(Array.isArray(payload.accessories)?payload.accessories:null);
+ if(items){
+  const nursery=items.find(x=>x.serviceName==='Nursery Temperature'),humidity=items.find(x=>x.serviceName==='Nursery Humidity'),living=items.find(x=>x.serviceName==='Living Room Thermostat');
+  if(!nursery||!humidity||!living)throw new Error('The local proxy response is missing one or more expected sensors.');
+  payload={nurseryTemperature:nursery.values?.CurrentTemperature,nurseryHumidity:humidity.values?.CurrentRelativeHumidity,livingRoomTemperature:living.values?.CurrentTemperature,livingRoomHumidity:living.values?.CurrentRelativeHumidity,targetTemperature:living.values?.TargetTemperature,targetHeatingCoolingState:living.values?.TargetHeatingCoolingState,currentHeatingCoolingState:living.values?.CurrentHeatingCoolingState};
+ }
+ const n=asNumber(pick(payload,'nurseryTemperature','nursery.temperature','nursery.currentTemperature','Nursery Temperature.CurrentTemperature'));
+ const nh=asNumber(pick(payload,'nurseryHumidity','nursery.humidity','nursery.relativeHumidity','Nursery Humidity.CurrentRelativeHumidity'));
+ const lt=asNumber(pick(payload,'livingRoomTemperature','livingRoom.temperature','livingRoom.currentTemperature','thermostat.CurrentTemperature'));
+ const lh=asNumber(pick(payload,'livingRoomHumidity','livingRoom.humidity','livingRoom.relativeHumidity','thermostat.CurrentRelativeHumidity'));
+ const target=asNumber(pick(payload,'targetTemperature','livingRoom.targetTemperature','thermostat.TargetTemperature'));
+ const mode=asNumber(pick(payload,'targetHeatingCoolingState','livingRoom.targetHeatingCoolingState','thermostat.TargetHeatingCoolingState'));
+ const state=asNumber(pick(payload,'currentHeatingCoolingState','livingRoom.currentHeatingCoolingState','thermostat.CurrentHeatingCoolingState'));
+ if([n,nh,lt,target].some(v=>v===undefined))throw new Error('The local proxy returned JSON, but its sensor fields did not match the expected readings.');
+ $('nurseryTemp').textContent=cToF(n).toFixed(1)+'°';$('nurseryHumidity').textContent=Math.round(nh)+'% RH';
+ $('livingTemp').textContent=cToF(lt).toFixed(1)+'°';
+ const modes={0:'Off',1:'Heat',2:'Cool',3:'Auto'},states={0:'Idle',1:'Heating',2:'Cooling'};
+ const details=['Set '+cToF(target).toFixed(1)+'°'];if(lh!==undefined)details.push(Math.round(lh)+'% RH');if(mode!==undefined)details.push(modes[mode]||'Mode?');if(state!==undefined)details.push(states[state]||'');
+ $('livingDetail').textContent=details.join(' · ');
+ $('indoorReadings').hidden=false;setHBStatus('Local sensors · connected');
 }
 async function pollHomebridge(){
- if(hbBusy)return;hbBusy=true;
- try{await fetchAccessories()}catch(e){clearIndoor();hbToken=null;setHBStatus(e.message.includes('Failed to fetch')?'Homebridge not reachable. Confirm iPad is on home Wi-Fi.':e.message)}
+ if(hbBusy||document.visibilityState==='hidden')return;hbBusy=true;
+ try{
+  const response=await fetch(SENSOR_URL,{method:'GET',headers:{Accept:'application/json'},cache:'no-store',credentials:'omit',mode:'cors'});
+  if(!response.ok)throw new Error('Local sensor proxy returned HTTP '+response.status+'.');
+  const data=await response.json();showIndoorPayload(data);
+ }catch(e){$('indoorReadings').hidden=true;setHBStatus(e.message==='Failed to fetch'?'Local sensor proxy unavailable. Check home Wi-Fi and the Pi.':e.message)}
  finally{hbBusy=false}
 }
-$('saveHomebridge').addEventListener('click',async()=>{const u=$('hbUser').value.trim(),p=$('hbPassword').value;if(!u||!p){setHBStatus('Enter both username and password.');return}localStorage.setItem('nightstand-hb-user',u);localStorage.setItem('nightstand-hb-password',p);hbToken=null;await pollHomebridge()});
-$('forgetHomebridge').addEventListener('click',()=>{localStorage.removeItem('nightstand-hb-user');localStorage.removeItem('nightstand-hb-password');$('hbUser').value='nightstand';$('hbPassword').value='';hbToken=null;clearIndoor();setHBStatus('Saved Homebridge credentials removed from this browser.')});
-$('hbUser').value=localStorage.getItem('nightstand-hb-user')||'nightstand';$('hbPassword').value=localStorage.getItem('nightstand-hb-password')||'';
+hbTimer=setInterval(pollHomebridge,POLL_MS);
+pollHomebridge();
 async function loadWeather(){
  if(!navigator.geolocation){$('weatherStatus').textContent='Location is unavailable in this browser.';return}
  navigator.geolocation.getCurrentPosition(async pos=>{
@@ -167,7 +175,6 @@ async function loadWeather(){
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(settings.keepAwake)setWakeLock(true);pollHomebridge();loadWeather()}});
 tick();setInterval(tick,200);
-if(localStorage.getItem('nightstand-hb-password')){pollHomebridge();hbTimer=setInterval(pollHomebridge,POLL_MS)}
 loadWeather();weatherTimer=setInterval(loadWeather,1800000);
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
