@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#171717">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Nightstand">
@@ -12,37 +12,37 @@
 <link rel="apple-touch-icon" href="./icon.svg">
 <title>Nightstand</title>
 <style>
-:root{color-scheme:dark;--bg:#171717;--face:#f0eee6;--rim:#292929;--fg:#242424;--muted:#b8b4aa;--accent:#950606;--red:#950606}
+:root{color-scheme:dark;--bg:#000000;--face:#000000;--rim:#950606;--fg:#950606;--muted:#950606;--accent:#950606;--red:#950606}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg)}
-body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:#e7e4dc;-webkit-font-smoothing:antialiased;user-select:none}
-.screen{position:relative;width:100%;height:100%;height:100dvh;display:grid;place-items:center;padding:env(safe-area-inset-top) 5vw env(safe-area-inset-bottom);background:#171717}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:#950606;-webkit-font-smoothing:antialiased;user-select:none}
+.screen{position:relative;width:100%;height:100%;height:100dvh;display:grid;place-items:center;padding:env(safe-area-inset-top) 5vw env(safe-area-inset-bottom);background:#000}
 .content{width:min(100%,900px);display:flex;flex-direction:column;align-items:center;gap:clamp(18px,4vh,38px);transform:translateY(-1vh)}
-.date{font-size:clamp(11px,1.6vw,14px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#aaa69d}
-.clock{width:min(64vh,70vw,590px);height:min(64vh,70vw,590px);min-width:260px;min-height:260px;max-width:calc(100vw - 40px);max-height:calc(100vw - 40px);aspect-ratio:1;position:relative;border-radius:50%;background:var(--face);border:1px solid #d2cfc5;box-shadow:0 16px 44px #0008,0 2px 5px #0005}
-.clock:before{content:"";position:absolute;inset:3.5%;border:1px solid #d7d4ca;border-radius:50%;opacity:.55}
-.tick{position:absolute;left:50%;top:5.5%;width:2px;height:5%;background:#292929;transform-origin:50% 890%;opacity:1}
-.tick.major{width:3px;height:8%;top:4%;background:#242424}
-.numeral{position:absolute;left:50%;top:50%;font-size:clamp(17px,3.2vh,25px);font-weight:500;letter-spacing:0;color:#242424;transform:translate(-50%,-50%);font-variant-numeric:tabular-nums}
+.date{font-size:clamp(11px,1.6vw,14px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#950606}
+.clock{width:min(64vh,70vw,590px);height:min(64vh,70vw,590px);min-width:260px;min-height:260px;max-width:calc(100vw - 40px);max-height:calc(100vw - 40px);aspect-ratio:1;position:relative;border-radius:50%;background:#000;border:1px solid #950606;box-shadow:0 0 0 1px #950606,0 16px 44px #000}
+.clock:before{content:"";position:absolute;inset:3.5%;border:1px solid #950606;border-radius:50%;opacity:.5}
+.tick{position:absolute;left:50%;top:5.5%;width:2px;height:5%;background:#950606;transform-origin:50% 890%;opacity:1}
+.tick.major{width:3px;height:8%;top:4%;background:#950606}
+.numeral{position:absolute;left:50%;top:50%;font-size:clamp(17px,3.2vh,25px);font-weight:500;letter-spacing:0;color:#950606;transform:translate(-50%,-50%);font-variant-numeric:tabular-nums}
 .hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:1px;z-index:3}
-.hour{width:8px;height:24%;background:#242424}
-.minute{width:5px;height:35%;background:#242424}
-.second{width:2px;height:40%;background:var(--red);z-index:4;border-radius:0}
-.pin{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:var(--red);transform:translate(-50%,-50%);z-index:5}
-.clock-label{position:absolute;left:50%;top:69%;transform:translateX(-50%);font-size:8px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#77736b;white-space:nowrap}
+.hour{width:8px;height:24%;background:#950606}
+.minute{width:5px;height:35%;background:#950606}
+.second{width:2px;height:40%;background:#950606;z-index:4;border-radius:0}
+.pin{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:#950606;transform:translate(-50%,-50%);z-index:5}
+.clock-label{position:absolute;left:50%;top:69%;transform:translateX(-50%);font-size:8px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#950606;white-space:nowrap}
 .toolbar{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
-.status{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aaa69d}
-button{font:inherit;color:#e7e4dc;background:#242424;border:1px solid #494949;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
-button:active{background:#333}
+.status{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#950606}
+button{font:inherit;color:#950606;background:#000;border:1px solid #950606;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
+button:active{background:#160000}
 button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5}
-.panel{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(70px,calc(env(safe-area-inset-bottom) + 62px));width:min(310px,calc(100vw - 32px));padding:22px;background:#242424;border:1px solid #494949;border-radius:14px;box-shadow:0 18px 60px #000b;text-align:left;display:none;z-index:6}
+.panel{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(70px,calc(env(safe-area-inset-bottom) + 62px));width:min(310px,calc(100vw - 32px));padding:22px;background:#000;border:1px solid #950606;border-radius:14px;box-shadow:0 18px 60px #000;text-align:left;display:none;z-index:6}
 .panel.open{display:block}
-.panel h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:#f0eee6;margin:0 0 18px}
-.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #ffffff18;font-size:14px;color:#e0ddd5}
-.setting small{display:block;color:#aaa69d;font-size:11px;margin-top:3px;line-height:1.4}
+.panel h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:#950606;margin:0 0 18px}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #95060655;font-size:14px;color:#950606}
+.setting small{display:block;color:#950606;font-size:11px;margin-top:3px;line-height:1.4}
 .setting input[type=checkbox]{accent-color:#950606;width:18px;height:18px}
 .setting input[type=range]{width:112px;accent-color:#950606}
-.notice{font-size:11px;line-height:1.5;color:#aaa69d;margin:14px 0 0}
+.notice{font-size:11px;line-height:1.5;color:#950606;margin:14px 0 0}
 .dim-layer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
 @media (orientation:portrait){.content{gap:clamp(18px,4vh,30px)}.clock{width:min(70vw,52vh,520px);height:auto}}
 @media (orientation:landscape){.content{flex-direction:row;justify-content:center;gap:clamp(34px,7vw,90px)}.date{position:absolute;top:7vh;left:50%;transform:translateX(-50%)}.clock{width:min(68vh,46vw,560px);height:auto}}
