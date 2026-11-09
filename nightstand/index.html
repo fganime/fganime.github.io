@@ -132,11 +132,24 @@ function showIndoor(items){
 function pick(obj,...keys){for(const key of keys){const value=key.split('.').reduce((v,k)=>v==null?undefined:v[k],obj);if(value!==undefined&&value!==null&&value!=='')return value}return undefined}
 function asNumber(value){const n=Number(value);return Number.isFinite(n)?n:undefined}
 function showIndoorPayload(payload){
- let items=Array.isArray(payload)?payload:(Array.isArray(payload.accessories)?payload.accessories:null);
+ let items=Array.isArray(payload)?payload:
+  (Array.isArray(payload.sensors)?payload.sensors:
+  (Array.isArray(payload.accessories)?payload.accessories:null));
  if(items){
-  const nursery=items.find(x=>x.serviceName==='Nursery Temperature'),humidity=items.find(x=>x.serviceName==='Nursery Humidity'),living=items.find(x=>x.serviceName==='Living Room Thermostat');
+  const serviceName=x=>x.serviceName||x.name||'';
+  const nursery=items.find(x=>serviceName(x)==='Nursery Temperature');
+  const humidity=items.find(x=>serviceName(x)==='Nursery Humidity');
+  const living=items.find(x=>serviceName(x)==='Living Room Thermostat');
   if(!nursery||!humidity||!living)throw new Error('The local proxy response is missing one or more expected sensors.');
-  payload={nurseryTemperature:nursery.values?.CurrentTemperature,nurseryHumidity:humidity.values?.CurrentRelativeHumidity,livingRoomTemperature:living.values?.CurrentTemperature,livingRoomHumidity:living.values?.CurrentRelativeHumidity,targetTemperature:living.values?.TargetTemperature,targetHeatingCoolingState:living.values?.TargetHeatingCoolingState,currentHeatingCoolingState:living.values?.CurrentHeatingCoolingState};
+  payload={
+   nurseryTemperature:nursery.values?.CurrentTemperature,
+   nurseryHumidity:humidity.values?.CurrentRelativeHumidity,
+   livingRoomTemperature:living.values?.CurrentTemperature,
+   livingRoomHumidity:living.values?.CurrentRelativeHumidity,
+   targetTemperature:living.values?.TargetTemperature,
+   targetHeatingCoolingState:living.values?.TargetHeatingCoolingState,
+   currentHeatingCoolingState:living.values?.CurrentHeatingCoolingState
+  };
  }
  const n=asNumber(pick(payload,'nurseryTemperature','nursery.temperature','nursery.currentTemperature','Nursery Temperature.CurrentTemperature'));
  const nh=asNumber(pick(payload,'nurseryHumidity','nursery.humidity','nursery.relativeHumidity','Nursery Humidity.CurrentRelativeHumidity'));
