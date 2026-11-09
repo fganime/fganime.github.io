@@ -30,7 +30,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;co
 .second{width:2px;height:40%;background:#950606;z-index:4;border-radius:0}
 .pin{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:#950606;transform:translate(-50%,-50%);z-index:5}
 .clock-label{position:absolute;left:50%;top:69%;transform:translateX(-50%);font-size:8px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#950606;white-space:nowrap}
-.toolbar{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
+.version{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(27px,calc(env(safe-area-inset-bottom) + 24px));font-size:9px;letter-spacing:.12em;color:#950606;opacity:.7;font-variant-numeric:tabular-nums}\n.toolbar{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
 .status{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#950606}
 button{font:inherit;color:#950606;background:#000;border:1px solid #950606;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
 button:active{background:#160000}
@@ -67,6 +67,7 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 <div class="clock-label">Nightstand</div>
 </div>
 </section>
+<div class="version" aria-label="App version">v0.4.0</div>
 <div class="toolbar">
 <span class="status" id="wakeStatus">Ready</span>
 <button id="settingsButton" aria-label="Settings" aria-expanded="false">
