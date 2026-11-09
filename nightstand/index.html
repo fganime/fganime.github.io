@@ -12,48 +12,65 @@
 <link rel="apple-touch-icon" href="./icon.svg">
 <title>Nightstand</title>
 <style>
-:root{color-scheme:dark;--bg:#000000;--face:#000000;--rim:#950606;--fg:#950606;--muted:#950606;--accent:#950606;--red:#950606}
+:root{color-scheme:dark;--red:#950606;--bg:#000}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:#950606;-webkit-font-smoothing:antialiased;user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:var(--red);-webkit-font-smoothing:antialiased;user-select:none}
 .screen{position:relative;width:100%;height:100%;height:100dvh;display:grid;place-items:center;padding:env(safe-area-inset-top) 5vw env(safe-area-inset-bottom);background:#000}
-.content{width:min(100%,900px);display:flex;flex-direction:column;align-items:center;gap:clamp(18px,4vh,38px);transform:translateY(-1vh)}
-.date{font-size:clamp(11px,1.6vw,14px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#950606}
-.clock{width:min(64vh,70vw,590px);height:min(64vh,70vw,590px);min-width:260px;min-height:260px;max-width:calc(100vw - 40px);max-height:calc(100vw - 40px);aspect-ratio:1;position:relative;border-radius:50%;background:#000;border:1px solid #950606;box-shadow:0 0 0 1px #950606,0 16px 44px #000}
-.clock:before{content:"";position:absolute;inset:3.5%;border:1px solid #950606;border-radius:50%;opacity:.5}
-.tick{position:absolute;left:50%;top:5%;width:2px;height:5%;background:#950606;transform-origin:50% 900%;opacity:1}
-.tick.major{width:3px;height:8%;top:4%;transform-origin:50% 575%;background:#950606}
-.numeral{position:absolute;left:50%;top:50%;font-size:clamp(17px,3.2vh,25px);font-weight:500;letter-spacing:0;color:#950606;transform:translate(-50%,-50%);font-variant-numeric:tabular-nums}
+.content{width:min(100%,1000px);display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,24px);transform:translateY(-1vh)}
+.date{font-size:clamp(11px,1.6vw,14px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;text-align:center}
+.readings{display:flex;align-items:center;justify-content:center;gap:clamp(18px,5vw,52px);min-height:38px;text-align:center}
+.reading{display:flex;flex-direction:column;gap:3px;min-width:75px}
+.reading .value{font-size:clamp(18px,3.2vh,27px);font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.reading .label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;opacity:.72}
+.reading .detail{font-size:10px;letter-spacing:.08em;opacity:.7}
+.readings[hidden]{display:none}
+.clock{width:min(64vh,70vw,590px);height:min(64vh,70vw,590px);min-width:260px;min-height:260px;max-width:calc(100vw - 40px);max-height:calc(100vw - 40px);aspect-ratio:1;position:relative;border-radius:50%;background:#000;border:1px solid var(--red);box-shadow:0 0 0 1px var(--red)}
+.clock:before{content:"";position:absolute;inset:3.5%;border:1px solid var(--red);border-radius:50%;opacity:.5}
+.tick{position:absolute;left:50%;top:5%;width:2px;height:5%;background:var(--red);transform-origin:50% 900%}
+.tick.major{width:3px;height:8%;top:4%;transform-origin:50% 575%}
 .hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:1px;z-index:3}
-.hour{width:8px;height:24%;background:#950606}
-.minute{width:5px;height:35%;background:#950606}
-.second{width:2px;height:40%;background:#950606;z-index:4;border-radius:0}
-.pin{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:#950606;transform:translate(-50%,-50%);z-index:5}
-.clock-label{position:absolute;left:50%;top:69%;transform:translateX(-50%);font-size:8px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#950606;white-space:nowrap}
-.version{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(27px,calc(env(safe-area-inset-bottom) + 24px));font-size:9px;letter-spacing:.12em;color:#950606;opacity:.7;font-variant-numeric:tabular-nums}\n.toolbar{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
-.status{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#950606}
-button{font:inherit;color:#950606;background:#000;border:1px solid #950606;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
+.hour{width:8px;height:24%;background:var(--red)}
+.minute{width:5px;height:35%;background:var(--red)}
+.second{width:2px;height:40%;background:var(--red);z-index:4;border-radius:0}
+.pin{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:var(--red);transform:translate(-50%,-50%);z-index:5}
+.toolbar{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
+.status{font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+button{font:inherit;color:var(--red);background:#000;border:1px solid var(--red);border-radius:50%;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
 button:active{background:#160000}
 button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5}
-.panel{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(70px,calc(env(safe-area-inset-bottom) + 62px));width:min(310px,calc(100vw - 32px));padding:22px;background:#000;border:1px solid #950606;border-radius:14px;box-shadow:0 18px 60px #000;text-align:left;display:none;z-index:6}
+.panel{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(70px,calc(env(safe-area-inset-bottom) + 62px));width:min(340px,calc(100vw - 32px));max-height:min(78vh,650px);overflow:auto;padding:20px;background:#000;border:1px solid var(--red);border-radius:12px;box-shadow:0 18px 60px #000;text-align:left;display:none;z-index:6}
 .panel.open{display:block}
-.panel h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:#950606;margin:0 0 18px}
-.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #95060655;font-size:14px;color:#950606}
-.setting small{display:block;color:#950606;font-size:11px;margin-top:3px;line-height:1.4}
-.setting input[type=checkbox]{accent-color:#950606;width:18px;height:18px}
-.setting input[type=range]{width:112px;accent-color:#950606}
-.notice{font-size:11px;line-height:1.5;color:#950606;margin:14px 0 0}
+.panel h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin:0 0 14px}
+.panel h3{font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin:18px 0 6px;opacity:.72}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #95060655;font-size:13px}
+.setting small{display:block;opacity:.65;font-size:10px;margin-top:3px;line-height:1.4}
+.setting input[type=checkbox]{accent-color:var(--red);width:18px;height:18px}
+.setting input[type=range]{width:112px;accent-color:var(--red)}
+.field{display:flex;flex-direction:column;gap:5px;margin:10px 0}
+.field label{font-size:11px;opacity:.8}
+.field input{width:100%;padding:10px 11px;background:#080000;border:1px solid #95060688;border-radius:6px;color:var(--red);font:inherit;font-size:13px;outline:none}
+.field input:focus{border-color:var(--red)}
+.panel-actions{display:flex;gap:8px;margin-top:12px}
+.action{width:auto;height:auto;min-height:36px;border-radius:6px;padding:8px 12px;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.notice{font-size:10px;line-height:1.5;opacity:.72;margin:12px 0 0;overflow-wrap:anywhere}
 .dim-layer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
-@media (orientation:portrait){.content{gap:clamp(18px,4vh,30px)}.clock{width:min(70vw,52vh,520px);height:auto}}
-@media (orientation:landscape){.content{flex-direction:row;justify-content:center;gap:clamp(34px,7vw,90px)}.date{position:absolute;top:7vh;left:50%;transform:translateX(-50%)}.clock{width:min(68vh,46vw,560px);height:auto}}
-@media (max-height:430px){.clock{width:min(78vh,42vw,360px);height:auto}.date{top:3vh}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (orientation:portrait){.content{gap:clamp(12px,2.4vh,22px)}.clock{width:min(70vw,52vh,520px);height:auto}}
+@media (orientation:landscape){.content{flex-direction:row;justify-content:center;gap:clamp(24px,5vw,64px)}.date{position:absolute;top:5vh;left:50%;transform:translateX(-50%)}.content{padding-top:5vh}.clock{width:min(64vh,44vw,540px);height:auto}.readings{flex-direction:column;gap:16px}}
+@media (max-height:430px){.clock{width:min(76vh,40vw,340px);height:auto}.date{top:2vh}.content{padding-top:3vh}}
 </style>
 </head>
 <body>
-<main class="screen" id="screen">
-<section class="content" aria-label="Analog bedside clock">
-<div class="date" id="date">Sunday, November 8</div>
+<main class="screen">
+<section class="content" aria-label="Nightstand clock">
+<div class="date" id="date"></div>
+<div class="readings" id="indoorReadings" hidden aria-live="polite">
+<div class="reading"><span class="value" id="nurseryTemp">—</span><span class="label">Nursery</span><span class="detail" id="nurseryHumidity">—</span></div>
+<div class="reading"><span class="value" id="livingTemp">—</span><span class="label">Living room</span><span class="detail" id="livingDetail">—</span></div>
+</div>
+<div class="readings" id="weatherReading" hidden>
+<div class="reading"><span class="value" id="outdoorTemp">—</span><span class="label" id="weatherLabel">Outside</span><span class="detail" id="weatherDetail">—</span></div>
+</div>
 <div class="clock" id="clock" role="img" aria-label="Analog clock">
 <div id="ticks"></div>
 <div class="hand hour" id="hourHand"></div>
@@ -63,53 +80,95 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 </div>
 </section>
 <div class="toolbar">
-<span class="status" id="wakeStatus">Ready</span>
+<span class="status" id="systemStatus">Ready</span>
 <button id="settingsButton" aria-label="Settings" aria-expanded="false">
 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.03a1.7 1.7 0 0 0-1.8.3l-.07.06h-3.4l-.03-.1a1.7 1.7 0 0 0-1.3-1.2l-.1-.02-1.7-2.94.06-.08a1.7 1.7 0 0 0 .18-1.82l-.04-.09v-3.4l.1-.03a1.7 1.7 0 0 0 1.2-1.3l.02-.1 2.94-1.7.08.06a1.7 1.7 0 0 0 1.82.18l.09-.04h3.4l.03.1a1.7 1.7 0 0 0 1.3 1.2l.1.02 1.7 2.94-.06.08a1.7 1.7 0 0 0-.18 1.82l.04.09z" transform="translate(-2 -2) scale(.9)"/></svg>
 </button>
 </div>
-<aside class="panel" id="panel" aria-label="Clock settings">
+<aside class="panel" id="panel" aria-label="Nightstand settings">
 <h2>Nightstand settings</h2>
 <label class="setting"><span>Sweep second hand</span><input id="showSeconds" type="checkbox" checked></label>
 <label class="setting"><span>Keep display awake<small>Requires browser support</small></span><input id="keepAwake" type="checkbox"></label>
 <label class="setting"><span>Screen dimmer</span><input id="brightness" type="range" min="0" max="85" value="0"></label>
-<p class="notice" id="wakeNotice">The clock uses your iPad's local time. Keep the iPad connected to power for overnight use.</p>
+<h3>Homebridge · local network only</h3>
+<div class="field"><label for="hbUser">Username</label><input id="hbUser" autocomplete="username" value="nightstand"></div>
+<div class="field"><label for="hbPassword">Password</label><input id="hbPassword" type="password" autocomplete="current-password" placeholder="Enter Homebridge password"></div>
+<div class="panel-actions"><button class="action" id="saveHomebridge">Save & connect</button><button class="action" id="forgetHomebridge">Forget</button></div>
+<p class="notice" id="homebridgeStatus">Homebridge is checked only at 192.168.6.125 on your home Wi-Fi. Credentials are stored in this browser on this iPad, not in the website repository. Indoor readings disappear when the local endpoint cannot be reached.</p>
+<h3>Outdoor weather</h3>
+<p class="notice" id="weatherStatus">Uses this iPad's location and Open-Meteo. Location access is requested by Safari.</p>
+<p class="notice" id="wakeNotice">The clock uses your iPad's local time. Keep it connected to power for overnight use.</p>
 </aside>
 </main>
 <div class="dim-layer" id="dimLayer"></div>
 <script>
 const $=id=>document.getElementById(id);
+const HB_BASE='http://192.168.6.125:8581/api';
+const POLL_MS=180000, TOKEN_REFRESH_MS=7*60*60*1000+45*60*1000;
 const defaults={showSeconds:true,keepAwake:false,brightness:0};
-let settings={...defaults};
+let settings={...defaults},wakeLock=null,hbToken=null,hbTokenAt=0,hbTimer=null,hbBusy=false,weatherTimer=null;
 try{settings={...defaults,...JSON.parse(localStorage.getItem('nightstand-settings')||'{}')}}catch{}
-let wakeLock=null;
 const save=()=>localStorage.setItem('nightstand-settings',JSON.stringify(settings));
+const cToF=c=>Math.round((Number(c)*9/5+32)*10)/10;
 for(let i=0;i<24;i++){const mark=document.createElement('i');mark.className='tick'+(i%6===0?' major':'');mark.style.transform='translateX(-50%) rotate('+i*15+'deg)';$('ticks').appendChild(mark)}
-function tick(){
- const now=new Date(),ms=now.getMilliseconds(),sec=now.getSeconds()+ms/1000,min=now.getMinutes()+sec/60,hour=(now.getHours()%12)+min/60;
- $('date').textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(now);
- $('hourHand').style.transform='translateX(-50%) rotate('+hour*30+'deg)';
- $('minuteHand').style.transform='translateX(-50%) rotate('+min*6+'deg)';
- $('secondHand').style.display=settings.showSeconds?'block':'none';
- $('secondHand').style.transform='translateX(-50%) rotate('+sec*6+'deg)';
-}
-async function setWakeLock(enabled){
- settings.keepAwake=enabled;save();
- if(!enabled){if(wakeLock){await wakeLock.release();wakeLock=null}$('wakeStatus').textContent='Ready';return}
- if(!('wakeLock'in navigator)){$('keepAwake').checked=false;settings.keepAwake=false;save();$('wakeStatus').textContent='Wake lock unavailable';$('wakeNotice').textContent='This browser does not support Screen Wake Lock. iPadOS may sleep normally.';return}
- try{wakeLock=await navigator.wakeLock.request('screen');$('wakeStatus').textContent='Display awake';$('wakeNotice').textContent='Screen Wake Lock is active while this page is visible.';wakeLock.addEventListener('release',()=>{wakeLock=null;$('wakeStatus').textContent='Wake lock released'})}
- catch(e){$('wakeStatus').textContent='Wake lock unavailable';$('wakeNotice').textContent='iPadOS did not grant a screen wake lock.'}
-}
+function tick(){const now=new Date(),ms=now.getMilliseconds(),sec=now.getSeconds()+ms/1000,min=now.getMinutes()+sec/60,hour=(now.getHours()%12)+min/60;$('date').textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(now);$('hourHand').style.transform='translateX(-50%) rotate('+hour*30+'deg)';$('minuteHand').style.transform='translateX(-50%) rotate('+min*6+'deg)';$('secondHand').style.display=settings.showSeconds?'block':'none';$('secondHand').style.transform='translateX(-50%) rotate('+sec*6+'deg)'}
+async function setWakeLock(enabled){settings.keepAwake=enabled;save();if(!enabled){if(wakeLock){await wakeLock.release();wakeLock=null}$('systemStatus').textContent='Ready';return}if(!('wakeLock'in navigator)){$('keepAwake').checked=false;settings.keepAwake=false;save();$('systemStatus').textContent='Wake lock unavailable';$('wakeNotice').textContent='This browser does not support Screen Wake Lock.';return}try{wakeLock=await navigator.wakeLock.request('screen');$('systemStatus').textContent='Display awake';wakeLock.addEventListener('release',()=>{wakeLock=null;$('systemStatus').textContent='Wake lock released'})}catch{$('systemStatus').textContent='Wake lock unavailable'}}
 $('settingsButton').addEventListener('click',()=>{const open=$('panel').classList.toggle('open');$('settingsButton').setAttribute('aria-expanded',String(open))});
-$('showSeconds').checked=settings.showSeconds;
-$('showSeconds').addEventListener('change',e=>{settings.showSeconds=e.target.checked;save();tick()});
-$('keepAwake').checked=settings.keepAwake;
-$('keepAwake').addEventListener('change',e=>setWakeLock(e.target.checked));
-$('brightness').value=settings.brightness;
-$('dimLayer').style.opacity=settings.brightness/100;
-$('brightness').addEventListener('input',e=>{settings.brightness=Number(e.target.value);$('dimLayer').style.opacity=settings.brightness/100;save()});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&settings.keepAwake)setWakeLock(true)});
+$('showSeconds').checked=settings.showSeconds;$('showSeconds').addEventListener('change',e=>{settings.showSeconds=e.target.checked;save();tick()});
+$('keepAwake').checked=settings.keepAwake;$('keepAwake').addEventListener('change',e=>setWakeLock(e.target.checked));
+$('brightness').value=settings.brightness;$('dimLayer').style.opacity=settings.brightness/100;$('brightness').addEventListener('input',e=>{settings.brightness=Number(e.target.value);$('dimLayer').style.opacity=settings.brightness/100;save()});
+function setHBStatus(message){$('homebridgeStatus').textContent=message}
+function clearIndoor(){ $('indoorReadings').hidden=true; }
+function showIndoor(items){
+ const nursery=items.find(x=>x.serviceName==='Nursery Temperature');
+ const humidity=items.find(x=>x.serviceName==='Nursery Humidity');
+ const living=items.find(x=>x.serviceName==='Living Room Thermostat');
+ if(!nursery||!humidity||!living||!nursery.values||!humidity.values||!living.values){clearIndoor();setHBStatus('Connected locally, but one or more expected Homebridge services are missing.');return}
+ const n=Number(nursery.values.CurrentTemperature),nh=Number(humidity.values.CurrentRelativeHumidity),lt=Number(living.values.CurrentTemperature),lh=Number(living.values.CurrentRelativeHumidity),target=Number(living.values.TargetTemperature),mode=Number(living.values.TargetHeatingCoolingState),state=Number(living.values.CurrentHeatingCoolingState);
+ if(![n,nh,lt,lh,target].every(Number.isFinite)){clearIndoor();setHBStatus('Homebridge returned incomplete sensor values.');return}
+ $('nurseryTemp').textContent=cToF(n).toFixed(1)+'°';$('nurseryHumidity').textContent=Math.round(nh)+'% RH';
+ $('livingTemp').textContent=cToF(lt).toFixed(1)+'°';const modes={0:'Off',1:'Heat',2:'Cool',3:'Auto'},states={0:'Idle',1:'Heating',2:'Cooling'};
+ $('livingDetail').textContent='Set '+cToF(target).toFixed(1)+'° · '+(modes[mode]||'Mode?')+' · '+(states[state]||'');
+ $('indoorReadings').hidden=false;setHBStatus('Homebridge · local');
+}
+async function loginHomebridge(){
+ const username=$('hbUser').value.trim(),password=$('hbPassword').value;
+ if(!username||!password)throw new Error('Enter the Homebridge username and password in Settings.');
+ const response=await fetch(HB_BASE+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password}),cache:'no-store'});
+ if(!response.ok)throw new Error(response.status===401?'Homebridge rejected the username or password.':'Homebridge login failed (HTTP '+response.status+').');
+ const data=await response.json();if(!data.access_token)throw new Error('Homebridge login response did not contain an access token.');
+ hbToken=data.access_token;hbTokenAt=Date.now();
+}
+async function fetchAccessories(){
+ if(!hbToken||Date.now()-hbTokenAt>TOKEN_REFRESH_MS)await loginHomebridge();
+ let response=await fetch(HB_BASE+'/accessories',{headers:{Authorization:'Bearer '+hbToken},cache:'no-store'});
+ if(response.status===401){hbToken=null;await loginHomebridge();response=await fetch(HB_BASE+'/accessories',{headers:{Authorization:'Bearer '+hbToken},cache:'no-store'})}
+ if(!response.ok)throw new Error('Homebridge accessories request failed (HTTP '+response.status+').');
+ const data=await response.json();if(!Array.isArray(data))throw new Error('Unexpected Homebridge accessories response.');
+ showIndoor(data.filter(x=>x.type!=='ProtocolInformation'));
+}
+async function pollHomebridge(){
+ if(hbBusy)return;hbBusy=true;
+ try{await fetchAccessories()}catch(e){clearIndoor();hbToken=null;setHBStatus(e.message.includes('Failed to fetch')?'Homebridge not reachable. Confirm iPad is on home Wi-Fi.':e.message)}
+ finally{hbBusy=false}
+}
+$('saveHomebridge').addEventListener('click',async()=>{const u=$('hbUser').value.trim(),p=$('hbPassword').value;if(!u||!p){setHBStatus('Enter both username and password.');return}localStorage.setItem('nightstand-hb-user',u);localStorage.setItem('nightstand-hb-password',p);hbToken=null;await pollHomebridge()});
+$('forgetHomebridge').addEventListener('click',()=>{localStorage.removeItem('nightstand-hb-user');localStorage.removeItem('nightstand-hb-password');$('hbUser').value='nightstand';$('hbPassword').value='';hbToken=null;clearIndoor();setHBStatus('Saved Homebridge credentials removed from this browser.')});
+$('hbUser').value=localStorage.getItem('nightstand-hb-user')||'nightstand';$('hbPassword').value=localStorage.getItem('nightstand-hb-password')||'';
+async function loadWeather(){
+ if(!navigator.geolocation){$('weatherStatus').textContent='Location is unavailable in this browser.';return}
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  try{const {latitude,longitude}=pos.coords;const url='https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&current=temperature_2m,relative_humidity_2m,weather_code&temperature_unit=fahrenheit&timezone=auto';
+   const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('Weather request failed');const j=await r.json(),c=j.current;if(!c)throw new Error('No current weather data');
+   const descriptions={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+   $('outdoorTemp').textContent=Math.round(c.temperature_2m)+'°';$('weatherLabel').textContent='Outside';$('weatherDetail').textContent=(descriptions[c.weather_code]||'Conditions')+' · '+Math.round(c.relative_humidity_2m)+'% RH';$('weatherReading').hidden=false;$('weatherStatus').textContent='Outdoor weather updates about every 30 minutes from this iPad’s location.';
+  }catch(e){$('weatherStatus').textContent='Outdoor weather unavailable: '+e.message}
+ },err=>{$('weatherStatus').textContent='Allow location access in Safari to show outdoor weather.'},{enableHighAccuracy:false,timeout:12000,maximumAge:1800000});
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(settings.keepAwake)setWakeLock(true);pollHomebridge();loadWeather()}});
 tick();setInterval(tick,200);
+if(localStorage.getItem('nightstand-hb-password')){pollHomebridge();hbTimer=setInterval(pollHomebridge,POLL_MS)}
+loadWeather();weatherTimer=setInterval(loadWeather,1800000);
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
 </body>
