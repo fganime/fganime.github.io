@@ -21,8 +21,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;co
 .date{font-size:clamp(11px,1.6vw,14px);font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#950606}
 .clock{width:min(64vh,70vw,590px);height:min(64vh,70vw,590px);min-width:260px;min-height:260px;max-width:calc(100vw - 40px);max-height:calc(100vw - 40px);aspect-ratio:1;position:relative;border-radius:50%;background:#000;border:1px solid #950606;box-shadow:0 0 0 1px #950606,0 16px 44px #000}
 .clock:before{content:"";position:absolute;inset:3.5%;border:1px solid #950606;border-radius:50%;opacity:.5}
-.tick{position:absolute;left:50%;top:5.5%;width:2px;height:5%;background:#950606;transform-origin:50% 890%;opacity:1}
-.tick.major{width:3px;height:8%;top:4%;background:#950606}
+.tick{position:absolute;left:50%;top:5%;width:2px;height:5%;background:#950606;transform-origin:50% 900%;opacity:1}
+.tick.major{width:3px;height:8%;top:4%;transform-origin:50% 575%;background:#950606}
 .numeral{position:absolute;left:50%;top:50%;font-size:clamp(17px,3.2vh,25px);font-weight:500;letter-spacing:0;color:#950606;transform:translate(-50%,-50%);font-variant-numeric:tabular-nums}
 .hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:1px;z-index:3}
 .hour{width:8px;height:24%;background:#950606}
@@ -56,18 +56,12 @@ button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5
 <div class="date" id="date">Sunday, November 8</div>
 <div class="clock" id="clock" role="img" aria-label="Analog clock">
 <div id="ticks"></div>
-<div class="numeral" style="left:50%;top:17%">12</div>
-<div class="numeral" style="left:83%;top:50%">3</div>
-<div class="numeral" style="left:50%;top:83%">6</div>
-<div class="numeral" style="left:17%;top:50%">9</div>
 <div class="hand hour" id="hourHand"></div>
 <div class="hand minute" id="minuteHand"></div>
 <div class="hand second" id="secondHand"></div>
 <div class="pin"></div>
-<div class="clock-label">Nightstand</div>
 </div>
 </section>
-<div class="version" aria-label="App version">v0.4.0</div>
 <div class="toolbar">
 <span class="status" id="wakeStatus">Ready</span>
 <button id="settingsButton" aria-label="Settings" aria-expanded="false">
@@ -90,7 +84,7 @@ let settings={...defaults};
 try{settings={...defaults,...JSON.parse(localStorage.getItem('nightstand-settings')||'{}')}}catch{}
 let wakeLock=null;
 const save=()=>localStorage.setItem('nightstand-settings',JSON.stringify(settings));
-for(let i=0;i<60;i++){const mark=document.createElement('i');mark.className='tick'+(i%5===0?' major':'');mark.style.transform='translateX(-50%) rotate('+i*6+'deg)';$('ticks').appendChild(mark)}
+for(let i=0;i<24;i++){const mark=document.createElement('i');mark.className='tick'+(i%6===0?' major':'');mark.style.transform='translateX(-50%) rotate('+i*15+'deg)';$('ticks').appendChild(mark)}
 function tick(){
  const now=new Date(),ms=now.getMilliseconds(),sec=now.getSeconds()+ms/1000,min=now.getMinutes()+sec/60,hour=(now.getHours()%12)+min/60;
  $('date').textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(now);
