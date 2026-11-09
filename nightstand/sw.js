@@ -1,4 +1,4 @@
-const CACHE = 'nightstand-v14';
+const CACHE = 'nightstand-v15';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => {
