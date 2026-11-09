@@ -1,13 +1,13 @@
 {
   "name": "Nightstand",
   "short_name": "Nightstand",
-  "description": "A minimal deep-red analog bedside clock for iPad.",
+  "description": "A minimal Braun-inspired analog bedside clock with red accents for iPad.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#100204",
-  "theme_color": "#100204",
+  "background_color": "#171717",
+  "theme_color": "#171717",
   "icons": [
     {
       "src": "./icon.svg",
