@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090909">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Nightstand">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <title>Nightstand</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090909;--fg:#e8e3da;--muted:#77736d;--accent:#d5a36c;--dim:0}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg)}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--fg);-webkit-font-smoothing:antialiased;user-select:none}
+    .screen{position:relative;width:100%;height:100%;height:100dvh;display:grid;place-items:center;padding:env(safe-area-inset-top) 5vw env(safe-area-inset-bottom);background:radial-gradient(ellipse at 50% 44%,#171512 0%,var(--bg) 64%);transition:background .8s,color .8s}
+    .screen.night{--fg:#c77c61;--muted:#714c43;--accent:#c77c61;background:radial-gradient(ellipse at 50% 44%,#170d0c 0%,#070606 68%)}
+    .content{width:min(100%,980px);text-align:center;transform:translateY(-1.5vh)}
+    .date{font-size:clamp(13px,2vw,18px);font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:clamp(18px,4vh,42px)}
+    .time{font-variant-numeric:tabular-nums;font-weight:200;letter-spacing:-.075em;line-height:.88;font-size:clamp(92px,21vw,250px);white-space:nowrap;color:var(--fg)}
+    .time .seconds{font-size:.27em;letter-spacing:-.035em;vertical-align:top;display:inline-block;margin:.13em 0 0 .12em;color:var(--muted);font-weight:300}
+    .rule{height:1px;width:64px;background:var(--muted);opacity:.45;margin:clamp(28px,6vh,58px) auto 18px}
+    .caption{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+    .toolbar{position:absolute;right:max(20px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px}
+    .status{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);opacity:.8}
+    button{font:inherit;color:var(--muted);background:transparent;border:1px solid #ffffff20;border-radius:999px;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
+    button:active{background:#ffffff12}
+    button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5}
+    .panel{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(72px,calc(env(safe-area-inset-bottom) + 64px));width:min(310px,calc(100vw - 32px));padding:22px;background:#171615;border:1px solid #ffffff18;border-radius:18px;box-shadow:0 18px 60px #0009;text-align:left;display:none}
+    .panel.open{display:block}
+    .panel h2{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--fg);margin:0 0 18px}
+    .setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #ffffff12;font-size:14px;color:#d0cbc3}
+    .setting small{display:block;color:#827d75;font-size:11px;margin-top:3px;line-height:1.4}
+    .setting input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+    .setting input[type=range]{width:112px;accent-color:var(--accent)}
+    .setting select{background:#252321;color:#eee;border:1px solid #ffffff20;border-radius:7px;padding:6px}
+    .notice{font-size:11px;line-height:1.5;color:#948e85;margin:14px 0 0}
+    .dim-layer{position:fixed;inset:0;background:#000;opacity:var(--dim);pointer-events:none;z-index:5}
+    @media (orientation:portrait){.content{transform:translateY(-3vh)}.time{font-size:clamp(82px,23vw,175px)}.date{letter-spacing:.18em}}
+    @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="screen" id="screen">
+    <section class="content" aria-label="Bedside clock">
+      <div class="date" id="date">Sunday, November 8</div>
+      <div class="time" id="time">9:41</div>
+      <div class="rule"></div>
+      <div class="caption" id="modeLabel">Good evening</div>
+    </section>
+    <div class="toolbar">
+      <span class="status" id="wakeStatus">Display sleep enabled</span>
+      <button id="settingsButton" aria-label="Settings" aria-expanded="false">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.03a1.7 1.7 0 0 0-1.8.3l-.07.06h-3.4l-.03-.1a1.7 1.7 0 0 0-1.3-1.2l-.1-.02-1.7-2.94.06-.08a1.7 1.7 0 0 0 .18-1.82l-.04-.09v-3.4l.1-.03a1.7 1.7 0 0 0 1.2-1.3l.02-.1 2.94-1.7.08.06a1.7 1.7 0 0 0 1.82.18l.09-.04h3.4l.03.1a1.7 1.7 0 0 0 1.3 1.2l.1.02 1.7 2.94-.06.08a1.7 1.7 0 0 0-.18 1.82l.04.09z" transform="translate(-2 -2) scale(.9)"/></svg>
+      </button>
+    </div>
+    <aside class="panel" id="panel" aria-label="Clock settings">
+      <h2>Nightstand settings</h2>
+      <label class="setting"><span>24-hour clock</span><input id="twentyFour" type="checkbox"></label>
+      <label class="setting"><span>Show seconds</span><input id="showSeconds" type="checkbox"></label>
+      <label class="setting"><span>Automatic night mode<small>Warm red between 9 PM and 6 AM</small></span><input id="autoNight" type="checkbox" checked></label>
+      <label class="setting"><span>Night mode</span><input id="manualNight" type="checkbox"></label>
+      <label class="setting"><span>Keep display awake<small>Requires browser support</small></span><input id="keepAwake" type="checkbox"></label>
+      <label class="setting"><span>Screen dimmer</span><input id="brightness" type="range" min="0" max="85" value="0"></label>
+      <p class="notice" id="wakeNotice">For best results, keep the iPad connected to power. iPadOS may still manage display sleep in some situations.</p>
+    </aside>
+  </main>
+  <div class="dim-layer" id="dimLayer"></div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const defaults = {twentyFour:false,showSeconds:false,autoNight:true,manualNight:false,keepAwake:false,brightness:0};
+    let settings = {...defaults};
+    try { settings = {...defaults,...JSON.parse(localStorage.getItem('nightstand-settings')||'{}')}; } catch {}
+    let wakeLock = null;
+    const save = () => localStorage.setItem('nightstand-settings',JSON.stringify(settings));
+    function applySettings(){
+      $('twentyFour').checked=settings.twentyFour;
+      $('showSeconds').checked=settings.showSeconds;
+      $('autoNight').checked=settings.autoNight;
+      $('manualNight').checked=settings.manualNight;
+      $('keepAwake').checked=settings.keepAwake;
+      $('brightness').value=settings.brightness;
+      $('dimLayer').style.opacity=Number(settings.brightness)/100;
+      updateNightMode();
+    }
+    function updateNightMode(){
+      const hour=new Date().getHours();
+      const isNight=settings.manualNight || (settings.autoNight && (hour>=21 || hour<6));
+      $('screen').classList.toggle('night',isNight);
+      $('modeLabel').textContent=isNight?'Night mode':'Bedside clock';
+    }
+    function tick(){
+      const now=new Date();
+      $('date').textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(now);
+      const opts={hour:'numeric',minute:'2-digit',hour12:!settings.twentyFour};
+      if(settings.showSeconds) opts.second='2-digit';
+      const parts=new Intl.DateTimeFormat(undefined,opts).formatToParts(now);
+      const get=t=>parts.find(p=>p.type===t)?.value||'';
+      const time=get('hour')+':'+get('minute');
+      $('time').innerHTML=settings.showSeconds?time+'<span class="seconds">'+get('second')+'</span>':time;
+      updateNightMode();
+    }
+    async function setWakeLock(enabled){
+      settings.keepAwake=enabled; save();
+      if(!enabled){if(wakeLock){await wakeLock.release();wakeLock=null;} $('wakeStatus').textContent='Display sleep enabled';$('wakeNotice').textContent='Display sleep is not being prevented.';return;}
+      if(!('wakeLock' in navigator)){ $('keepAwake').checked=false;settings.keepAwake=false;save();$('wakeStatus').textContent='Wake lock unavailable';$('wakeNotice').textContent='This browser does not support Screen Wake Lock. The iPad may go to sleep normally.';return;}
+      try{
+        wakeLock=await navigator.wakeLock.request('screen');
+        $('wakeStatus').textContent='Keeping display awake';
+        $('wakeNotice').textContent='Screen Wake Lock is active while this page is visible. Keep the iPad connected to power.';
+        wakeLock.addEventListener('release',()=>{wakeLock=null;$('wakeStatus').textContent='Wake lock released';});
+      }catch(e){$('wakeStatus').textContent='Wake lock unavailable';$('wakeNotice').textContent='iPadOS did not grant a screen wake lock. Keep the page in the foreground and check device settings.';}
+    }
+    $('settingsButton').addEventListener('click',()=>{
+      const open=$('panel').classList.toggle('open');
+      $('settingsButton').setAttribute('aria-expanded',String(open));
+    });
+    for(const key of ['twentyFour','showSeconds','autoNight','manualNight']){
+      $(key).addEventListener('change',e=>{settings[key]=e.target.checked;save();tick();});
+    }
+    $('brightness').addEventListener('input',e=>{settings.brightness=Number(e.target.value);$('dimLayer').style.opacity=settings.brightness/100;save();});
+    $('keepAwake').addEventListener('change',e=>setWakeLock(e.target.checked));
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&settings.keepAwake)setWakeLock(true);});
+    applySettings();tick();setInterval(tick,250);
+    if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  </script>
+</body>
+</html>
