@@ -169,12 +169,39 @@ async function loadWeather(){
  if(!navigator.geolocation){$('weatherStatus').textContent='Location services are not available in this browser.';return}
  $('weatherStatus').textContent='Requesting this iPhone’s location…';
  navigator.geolocation.getCurrentPosition(async pos=>{
-  try{const {latitude,longitude}=pos.coords;const url='https://api.open-meteo.com/v1/forecast?latitude='+latitude+'&longitude='+longitude+'&current=temperature_2m,relative_humidity_2m,weather_code&temperature_unit=fahrenheit&timezone=auto';
-   const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('Weather service returned HTTP '+r.status);const j=await r.json(),c=j.current;if(!c)throw new Error('Weather service returned no current conditions');
+  let stage='validating location';
+  try{
+   const latitude=Number(pos.coords.latitude),longitude=Number(pos.coords.longitude);
+   if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>90||Math.abs(longitude)>180)throw new Error('The device returned invalid coordinates.');
+   stage='building weather request';
+   const url=new URL('https://api.open-meteo.com/v1/forecast');
+   url.searchParams.set('latitude',String(latitude));
+   url.searchParams.set('longitude',String(longitude));
+   url.searchParams.set('current','temperature_2m,relative_humidity_2m,weather_code');
+   url.searchParams.set('temperature_unit','fahrenheit');
+   url.searchParams.set('timezone','auto');
+   stage='connecting to Open-Meteo';
+   const response=await fetch(url.href,{method:'GET',headers:{Accept:'application/json'},cache:'no-store',mode:'cors'});
+   if(!response.ok)throw new Error('Open-Meteo returned HTTP '+response.status+'.');
+   stage='reading weather response';
+   const body=await response.text();
+   stage='parsing weather response';
+   let data;
+   try{data=JSON.parse(body)}catch{throw new Error('Open-Meteo returned invalid JSON.')}
+   stage='validating current conditions';
+   const current=data&&data.current;
+   if(!current||!Number.isFinite(Number(current.temperature_2m))||!Number.isFinite(Number(current.relative_humidity_2m)))throw new Error(data?.reason||'The response did not contain current temperature and humidity.');
    const descriptions={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-   $('outdoorTemp').textContent=Math.round(c.temperature_2m)+'°';$('weatherLabel').textContent='Outside';$('weatherDetail').textContent=(descriptions[c.weather_code]||'Conditions')+' · '+Math.round(c.relative_humidity_2m)+'% RH';$('weatherReading').hidden=false;$('weatherStatus').textContent='Weather is updating every 30 minutes.';
-   weatherEnabled=true;localStorage.setItem('nightstand-weather-enabled','1');
-  }catch(e){$('weatherStatus').textContent='Weather data unavailable: '+e.message}
+   $('outdoorTemp').textContent=Math.round(Number(current.temperature_2m))+'°';
+   $('weatherLabel').textContent='Outside';
+   $('weatherDetail').textContent=(descriptions[Number(current.weather_code)]||'Conditions')+' · '+Math.round(Number(current.relative_humidity_2m))+'% RH';
+   $('weatherReading').hidden=false;
+   $('weatherStatus').textContent='Weather is updating every 30 minutes.';
+   weatherEnabled=true;
+   try{localStorage.setItem('nightstand-weather-enabled','1')}catch{}
+  }catch(e){
+   $('weatherStatus').textContent='Weather failed while '+stage+': '+(e&&e.message?e.message:String(e));
+  }
  },err=>{
   const messages={1:'Location permission was denied. On iPhone, open Settings → Privacy & Security → Location Services → Safari Websites, allow access, then try again.',2:'iPhone could not determine your location. Check Location Services and try again.',3:'Location request timed out. Try again.'};
   $('weatherStatus').textContent=messages[err.code]||'Location error: '+err.message;
