@@ -183,6 +183,7 @@ async function loadWeather(){
 $('weatherButton').addEventListener('click',()=>{weatherEnabled=true;loadWeather()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(settings.keepAwake)setWakeLock(true);pollHomebridge();if(weatherEnabled)loadWeather()}});
 tick();
+if(weatherEnabled)loadWeather();
 weatherTimer=setInterval(()=>{if(weatherEnabled)loadWeather()},1800000);
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
